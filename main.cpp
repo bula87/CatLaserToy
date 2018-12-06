@@ -4,15 +4,8 @@
 #include "config.h"
 
 #define AWAKE  4 //Despertar WIFI
-#define PANEL A8 //Entrada panel
-#define BAT   A7 //Entrada bateria
 
-#define IO0 5  //MICS5525_HEATHER
-#define IO1 13 //MICS2710_HEATHER
-#define IO2 9  //MICS2710_ALTAIMPEDANCIA
-#define IO3 10  //MICS2710_ALTAIMPEDANCIA
 #define FACTORY 7  //factory RESET/AP RN131
-#define CONTROL 12  //Control Mode
 
 #define INT_ANT "0"
 #define EXT_ANT "1"
@@ -36,16 +29,8 @@ static char buffer[buffer_length];
 void sckBegin() {
   Serial.begin(115200);
   Serial1.begin(9600);
-  pinMode(IO0, OUTPUT); //VH_MICS5525
-  pinMode(IO1, OUTPUT); //VH_MICS2710
-  pinMode(IO2, OUTPUT); //MICS2710_ALTAIMPEDANCIA
   pinMode(AWAKE, OUTPUT);
-  pinMode(MOSI, OUTPUT);
-  pinMode(SCK, OUTPUT);
   pinMode(FACTORY, OUTPUT);
-  pinMode(CONTROL, INPUT);
-  //digitalWrite(AWAKE, LOW); 
-  //digitalWrite(FACTORY, LOW); 
 }  
 
  boolean sckFindInResponse(const char *toMatch,

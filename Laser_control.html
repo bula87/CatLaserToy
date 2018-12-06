@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+
+<label for="ip">IP and port: </label>
+<input id="ip" type="text" value="192.168.1.150:2000">
+<button type="button" onclick='
+document.getElementById("onoff").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_toggle")
+document.getElementById("faster").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_speed_up")
+document.getElementById("slower").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_speed_down")
+document.getElementById("autoplay").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_autoplay")
+document.getElementById("extend").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_extend_area")
+document.getElementById("shrink").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_shrink_area")
+document.getElementById("up").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_manual_up")
+document.getElementById("down").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_manual_down")
+document.getElementById("right").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_manual_right")
+document.getElementById("left").setAttribute("href", "http://" + document.getElementById("ip").value + "/cmd_manual_left")
+'>Set</button>
+
+<p><a id="onoff" href="http://192.168.1.150:2000/cmd_toggle">On/Off laser</a></p>
+<p><a id="faster" href="http://192.168.1.150:2000/cmd_speed_up">Faster</a></p>
+<p><a id="slower" href="http://192.168.1.150:2000/cmd_speed_down">Slower</a></p>
+<p><a id="autoplay" href="http://192.168.1.150:2000/cmd_autoplay">Toggle autoplay</a></p>
+<p><a id="extend" href="http://192.168.1.150:2000/cmd_extend_area">Extend field</a></p>
+<p><a id="shrink" href="http://192.168.1.150:2000/cmd_shrink_area">Shrink field</a></p>
+<p><a id="up" href="http://192.168.1.150:2000/cmd_manual_up">Move up</a></p>
+<p><a id="down" href="http://192.168.1.150:2000/cmd_manual_down">Move down</a></p>
+<p><a id="right" href="http://192.168.1.150:2000/cmd_manual_right">Move right</a></p>
+<p><a id="left" href="http://192.168.1.150:2000/cmd_manual_left">Move left</a></p>
+
+
+
+</body>
+</html>

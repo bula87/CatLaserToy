@@ -11,8 +11,8 @@ VarSpeedServo servo9g2;
 int S1_value1, S1_value2;
 int S2_value1, S2_value2;
 
-bool autoplayState = 0;
-bool laserState = 0;
+bool autoplayState = 1;
+bool laserState = 1;
 
 const int servoSpeed = 10;
 const int seqIntervalDelta = 50;
@@ -21,14 +21,14 @@ const int manualyServoMaxStep = 20;
 const int minimalRangeSize = 10;
 
 // Change these parameters to define the rectangular play area
-int servo1Min = 80;
-int servo1Max = 110;
-int servo2Min = 20;
-int servo2Max = 50;
+int servo1Min = 70;
+int servo1Max = 120;
+int servo2Min = 10;
+int servo2Max = 60;
 
 int servo1pos = (servo1Min + servo1Max) / 2;
 int servo2pos = (servo2Min + servo2Max) / 2;
-int delayVal = 300;
+int delayVal = 100;
 
 bool check_autoplay()
 {
@@ -49,7 +49,7 @@ void pin_init()
 bool checkCommand(String cmd)
 {
   bool res = false;
-  if(!check_autoplay()) if(cmd.indexOf("/cmd_toggle") > 0) { toggleLaser(); res = true; }
+  if(cmd.indexOf("/cmd_toggle") > 0) { toggleLaser(); res = true; }
   if(cmd.indexOf("/cmd_speed_up") > 0) { speedUp(); res = true; }
   if(cmd.indexOf("/cmd_speed_down") > 0) { speedDown(); res = true; }
   if(cmd.indexOf("/cmd_autoplay") > 0) { autoplay(); res = true; }
@@ -94,6 +94,16 @@ void autoplay()
   autoplayState = !autoplayState;
   Serial.print("AutoPlay: ");
   Serial.println(autoplayState);
+  if(autoplayState == 0)
+  {
+    servo9g1.detach();
+    servo9g2.detach();    
+  }
+  else
+  {
+    servo9g1.attach(SERVO9G1_PIN_SIG);         // 1. attach the servo to correct pin to control it.
+    servo9g2.attach(SERVO9G2_PIN_SIG);         // 1. attach the servo to correct pin to control it.
+  }
 }
 
 // Functionality
@@ -144,39 +154,55 @@ void shrink_area()
 
 void manual_up()
 {
+  servo9g2.attach(SERVO9G2_PIN_SIG);
+  delay(300);
   Serial.println("autoplay_up");
   servo2pos += random(manualyServoMinStep, manualyServoMaxStep);
   servo2pos = constrain(servo2pos, servo2Min, servo2Max);
   servo9g2.write(servo2pos, servoSpeed);
   servo9g2.wait();
   Serial.println(servo2pos);
+  delay(300);
+  servo9g2.detach(); 
 }
 
 void manual_down()
 {
+  servo9g2.attach(SERVO9G2_PIN_SIG);
+  delay(300);
   Serial.println("autoplay_down");
   servo2pos -= random(manualyServoMinStep, manualyServoMaxStep);
   servo2pos = constrain(servo2pos, servo2Min, servo2Max);
   servo9g2.write(servo2pos, servoSpeed);
   servo9g2.wait();
   Serial.println(servo2pos);
+  delay(300);
+  servo9g2.detach(); 
 }
 
 
 void manual_left()
 {
+  servo9g1.attach(SERVO9G1_PIN_SIG);
+  delay(300);
   Serial.println("autoplay_left");
   servo1pos += random(manualyServoMinStep, manualyServoMaxStep);
   servo1pos = constrain(servo1pos, servo1Min, servo1Max);
   servo9g1.write(servo1pos, servoSpeed);
   servo9g1.wait();
+  delay(300);
+  servo9g1.detach();
 }
 
 void manual_right()
 {
+  servo9g1.attach(SERVO9G1_PIN_SIG);
+  delay(300);
   Serial.println("autoplay_right");
   servo1pos -= random(manualyServoMinStep, manualyServoMaxStep);
   servo1pos = constrain(servo1pos, servo1Min, servo1Max);
   servo9g1.write(servo1pos, servoSpeed);
   servo9g1.wait();
+  delay(300);
+  servo9g1.detach();
 }
