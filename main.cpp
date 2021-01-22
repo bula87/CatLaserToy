@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <TimeLib.h>
+#include <TimeAlarms.h>
 #include "main.h"
 #include "laser.h"
 #include "config.h"
@@ -16,12 +18,14 @@
 #define WPA2  "4"
 #define WEP64 "8"
 
+AlarmId id;
+
 char* mySSID = SSID_NAME;
 char* myPassword = WPA2_PASS;
 char* wifiEncript = WPA2;
 char* antenna  = ANTENA_CONFIG;
 
-boolean connected;                  
+boolean connected;
 
 #define buffer_length        32
 static char buffer[buffer_length];
@@ -31,7 +35,7 @@ void sckBegin() {
   Serial1.begin(9600);
   pinMode(AWAKE, OUTPUT);
   pinMode(FACTORY, OUTPUT);
-}  
+}
 
  boolean sckFindInResponse(const char *toMatch,
                                     unsigned int timeOut = 1000) {
@@ -69,7 +73,7 @@ void sckBegin() {
 
 void sckRecovery()
 {
-    Serial.println("Reseting..."); 
+    Serial.println("Reseting...");
     digitalWrite(FACTORY, HIGH);
     delay(1000);
     digitalWrite(FACTORY, LOW);
@@ -93,7 +97,7 @@ void sckRecovery()
     Serial1.println();
     sckFindInResponse("<WEB_APP", 3000);
     sckReset();
-    Serial.println("Successfully reset"); 
+    Serial.println("Successfully reset");
     //digitalWrite(FACTORY, HIGH);
     sckEnterCommandMode();
 }
@@ -103,7 +107,7 @@ void sckSkipRemainderOfResponse(unsigned int timeOut) {
   while (((millis()-time)<timeOut))
   {
     if (Serial1.available())
-      { 
+      {
         byte temp = Serial1.read();
         //Serial.write(temp);
         time = millis();
@@ -156,7 +160,7 @@ boolean sckSendCommand(const char *command,
 #define COMMAND_MODE_GUARD_TIME 250 // in milliseconds
 
 boolean sckEnterCommandMode() {
-    for (int retryCount = 0; retryCount < COMMAND_MODE_ENTER_RETRY_ATTEMPTS; retryCount++) 
+    for (int retryCount = 0; retryCount < COMMAND_MODE_ENTER_RETRY_ATTEMPTS; retryCount++)
      {
       delay(COMMAND_MODE_GUARD_TIME);
       Serial1.print(F("$$$"));
@@ -199,9 +203,9 @@ boolean sckUpdate() {
 }
 
 boolean sckExitCommandMode() {
-    for (int retryCount = 0; retryCount < COMMAND_MODE_ENTER_RETRY_ATTEMPTS; retryCount++) 
+    for (int retryCount = 0; retryCount < COMMAND_MODE_ENTER_RETRY_ATTEMPTS; retryCount++)
      {
-      if (sckSendCommand(F("exit"), false, "EXIT")) 
+      if (sckSendCommand(F("exit"), false, "EXIT"))
       {
       return true;
       }
@@ -214,7 +218,7 @@ boolean sckConnect()
     if (!sckReady())
     {
       if(sckEnterCommandMode())
-        {    
+        {
             sckSendCommand(F("set wlan join 1")); // Disable AP mode
             sckSendCommand(F("set ip dhcp 1")); // Enable DHCP server
             //sckSendCommand(F("set ip proto 10")); //Modo TCP y modo HTML
@@ -236,10 +240,10 @@ boolean sckConnect()
             Serial.println("after reboot");
             return true;
         }
-      else return false;     
+      else return false;
     }
-   else return true;  
-  }  
+   else return true;
+  }
 
 uint32_t baud[7]={2400, 4800, 9600, 19200, 38400, 57600, 115200};
 
@@ -252,7 +256,7 @@ void sckRepair()
       {
         Serial1.begin(baud[i]);
         Serial.println(baud[i]);
-        if(sckEnterCommandMode()) 
+        if(sckEnterCommandMode())
         {
           sckReset();
           repair = false;
@@ -271,65 +275,68 @@ boolean sckReady()
   if (sckEnterCommandMode())
     {
       Serial1.println(F("join"));
-      if (sckFindInResponse("Associated!", 8000)) 
+      if (sckFindInResponse("Associated!", 8000))
       {
         sckSkipRemainderOfResponse(3000);
         sckExitCommandMode();
         return(true);
       }
-   } 
+   }
   else return(false);
 }
-  
+
 char* itoa(int32_t number)
   {
    byte count = 0;
    uint32_t temp;
-   if (number < 0) {temp = number*(-1); count++;} 
-   while ((temp/10)!=0) 
+   if (number < 0) {temp = number*(-1); count++;}
+   while ((temp/10)!=0)
    {
      temp = temp/10;
      count++;
    }
    int i;
-   if (number < 0) {temp = number*(-1);} 
+   if (number < 0) {temp = number*(-1);}
    else temp = number;
-   for (i = count; i>=0; i--) 
-   { 
-     buffer[i] = temp%10 + '0'; 
-     temp = temp/10; 
+   for (i = count; i>=0; i--)
+   {
+     buffer[i] = temp%10 + '0';
+     temp = temp/10;
    }
-   if (number < 0) {buffer[0] = '-';} 
+   if (number < 0) {buffer[0] = '-';}
    buffer[count + 1] = 0x00;
-   return buffer;   
+   return buffer;
   }
- 
-void setup() { 
+
+void setup() {
   pin_init();
   sckBegin();
   //sckConnect();
   //sckRepair();
   sckConnect();
+  setTime(8,00,0,12,22,18); // set time to Saturday 8:00:00am Dec 2 2018
+  Alarm.alarmRepeat(8,30,0, turnOn);  // 8:30am every day
+  Alarm.alarmRepeat(17,45,0, tunrOn);  // 5:45pm every day
   //sckEnterCommandMode();
-} 
+}
 
-void loop() { 
-  
+void loop() {
+
   if(check_autoplay())
   {
     autoplay_randomPos();
   }
-  
+
   //handle_connection(0);
-  if (Serial.available()) 
+  if (Serial.available())
   {
     int inByte = Serial.read();
-    Serial1.write(inByte); 
+    Serial1.write(inByte);
   }
   if (Serial1.available()) {
     String line = Serial1.readStringUntil('\n');
     checkCommand(line);
-    Serial.println(line); 
-    Serial.println(""); 
+    Serial.println(line);
+    Serial.println("");
   }
-} 
+}

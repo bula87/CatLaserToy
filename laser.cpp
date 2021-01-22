@@ -21,14 +21,14 @@ const int manualyServoMaxStep = 20;
 const int minimalRangeSize = 10;
 
 // Change these parameters to define the rectangular play area
-int servo1Min = 70;
-int servo1Max = 120;
-int servo2Min = 10;
-int servo2Max = 60;
+int servo1Min = 75;
+int servo1Max = 115;
+int servo2Min = 15;
+int servo2Max = 55;
 
 int servo1pos = (servo1Min + servo1Max) / 2;
 int servo2pos = (servo2Min + servo2Max) / 2;
-int delayVal = 100;
+int delayVal = 200;
 
 bool check_autoplay()
 {
@@ -73,7 +73,7 @@ void toggleLaser()
 }
 
 void speedUp()
-{  
+{
   Serial.println("speedUp");
   if(delayVal > 0) delayVal -= seqIntervalDelta;
   Serial.print("delay: ");
@@ -81,7 +81,7 @@ void speedUp()
 }
 
 void speedDown()
-{  
+{
   Serial.println("speedDown");
   if(delayVal < 1000) delayVal += seqIntervalDelta;
   Serial.print("delay: ");
@@ -97,7 +97,7 @@ void autoplay()
   if(autoplayState == 0)
   {
     servo9g1.detach();
-    servo9g2.detach();    
+    servo9g2.detach();
   }
   else
   {
@@ -163,7 +163,7 @@ void manual_up()
   servo9g2.wait();
   Serial.println(servo2pos);
   delay(300);
-  servo9g2.detach(); 
+  servo9g2.detach();
 }
 
 void manual_down()
@@ -177,7 +177,7 @@ void manual_down()
   servo9g2.wait();
   Serial.println(servo2pos);
   delay(300);
-  servo9g2.detach(); 
+  servo9g2.detach();
 }
 
 
